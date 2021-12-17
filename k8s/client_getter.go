@@ -22,6 +22,22 @@ func NewK8sClientGetter(storage storage.Kubeconfig) *K8sClientGetter {
 	return &K8sClientGetter{storage: storage, cache: map[string]K8sClient{}}
 }
 
+func (k *K8sClientGetter) List(ctx context.Context) ([]K8sClient, error) {
+	clusters, err := k.storage.ListClusters()
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to list clusters")
+	}
+	var clients []K8sClient
+	for _, cluster := range clusters {
+		cli, err := k.GetClientByCluster(ctx, cluster)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to get k8s client")
+		}
+		clients = append(clients, cli)
+	}
+	return clients, nil
+}
+
 func (k *K8sClientGetter) GetClientByCluster(ctx context.Context, cluster string) (K8sClient, error) {
 	k.lock.Lock()
 	defer k.lock.Unlock()

@@ -3,6 +3,7 @@ package file
 import (
 	"io/ioutil"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/pkg/errors"
@@ -20,10 +21,31 @@ func NewStorage(rootPath string) *Storage {
 	return &Storage{rootPath}
 }
 
+func (s Storage) ListClusters() ([]string, error) {
+	files, err := ioutil.ReadDir(s.rootPath)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to list clusters")
+	}
+
+	var clusters []string
+	for _, file := range files {
+		if !file.IsDir() {
+			if file.Name() == "config" {
+				clusters = append(clusters, "default")
+			} else {
+				cluster := strings.TrimSuffix(file.Name(), ".yaml")
+				clusters = append(clusters, cluster)
+			}
+		}
+
+	}
+	return clusters, nil
+}
+
 func (s Storage) GetKubeConfigByCluster(cluster string) ([]byte, error) {
 	var filePath string
 	switch cluster {
-	case "":
+	case "", "default":
 		filePath = s.rootPath + "/config"
 	default:
 		filePath = s.rootPath + "/" + cluster + ".yaml"

@@ -19,7 +19,7 @@ func main() {
 	var staticPath string
 	var kubeconfigPath string
 	var port int
-	flag.StringVar(&staticPath, "s", "", "static file path to serve, not serve when empty")
+	flag.StringVar(&staticPath, "s", "./web/build", "static file path to serve, not serve when empty")
 	flag.IntVar(&port, "p", 8080, "server port")
 	flag.StringVar(&kubeconfigPath, "k", "", "kubeconfig path")
 	flag.Parse()
@@ -27,17 +27,15 @@ func main() {
 
 	theServer := server.NewHTTPServer()
 
+	ctx := context.Background()
+
 	kubeStorage := file.NewStorage(kubeconfigPath)
 	k8sCliGetter := k8s.NewK8sClientGetter(kubeStorage)
-	qaCli, err := k8sCliGetter.GetClientByCluster(context.TODO(), "qa")
+	clis, err := k8sCliGetter.List(ctx)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("list k8s client failed: %v", err)
 	}
-	ciCli, err := k8sCliGetter.GetClientByCluster(context.TODO(), "ci")
-	if err != nil {
-		log.Fatal(err)
-	}
-	helmCli := helm.NewClients([]k8s.K8sClient{qaCli, ciCli})
+	helmCli := helm.NewClients(clis)
 	healthService := service.NewHealth()
 	healthCtrl := ctrl.NewHealthController(healthService)
 
