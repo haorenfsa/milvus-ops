@@ -1,7 +1,7 @@
 # Get started
 
 prerequisite:
-- go:1.13
+- go:1.13+
 - yarn
 - GNU make
 
