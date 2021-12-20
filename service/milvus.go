@@ -56,12 +56,12 @@ func (m *MilvusService) ListNamespaces(ctx context.Context, cluster string) ([]s
 	return nss, wrapErr(ErrK8sAPI, err, "list namespaces for [cluster=%s]", cluster)
 }
 
-func (m *MilvusService) DownloadLog(ctx context.Context, opt MilvusLocateOption) (io.ReadCloser, error) {
+func (m *MilvusService) DownloadLog(ctx context.Context, opt MilvusLocateOption, logOpt LogOption) (io.ReadCloser, error) {
 	k8sCli, err := m.clusters.GetClientByCluster(ctx, opt.Cluster)
 	if err != nil {
 		return nil, wrapErr(ErrServerConfig, err, "get k8s client for [cluster=%s]", opt.Cluster)
 	}
-	return k8sCli.DownloadLog(ctx, opt)
+	return k8sCli.DownloadLog(ctx, opt, logOpt)
 }
 
 func (m *MilvusService) Logs(ctx context.Context, wsConn *websocket.Conn, opt MilvusLocateOption) error {

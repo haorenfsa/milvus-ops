@@ -1,10 +1,14 @@
-import { Button, message, Radio, Select, Tag } from "antd";
+import { Button, DatePicker, Input, InputNumber, message, Radio, Select, Switch, Tag, TimePicker } from "antd";
 import React, { useState, useEffect } from "react";
 import { XTerm } from 'xterm-for-react'
 import { FitAddon } from 'xterm-addon-fit';
 import ButtonGroup from "antd/lib/button/button-group";
 import { mustSplit3, parseQuery, queryGet, setQuery } from "../util";
 import { ClassifiedPods, ListClassfiedPods, ListMilvusCluster, MilvusCluster } from "../../api/milvus";
+import moment from 'moment';
+
+const format = 'HH:mm';
+
 
 const xtermRef = React.createRef<XTerm>()
 let ws: WebSocket
@@ -19,6 +23,8 @@ const Log: React.FC = () => {
   const [component, setSelectedComponent] = React.useState(queryGet(query, "component"))
   const [pod, setSelectedPod] = React.useState(queryGet(query, "pod"))
   const [container, setSelectedContainer] = React.useState(queryGet(query, "container"))
+  const [sinceTime, setSinceTime] = React.useState(moment().toISOString())
+  const [limitSizeMB, setLimitSizeMB] = React.useState(1)
 
   useEffect(() => {
     if (milvus[0] === "" && milvuses.length > 0) {
@@ -133,7 +139,6 @@ const Log: React.FC = () => {
     }
     ws.onmessage = (e) => {
       if (xtermRef.current) {
-        console.log("onmessage", e.data)
         let data = JSON.parse(e.data)
         if (data.operation === "stdout") {
           xtermRef.current.terminal.write(data.data)
@@ -147,12 +152,11 @@ const Log: React.FC = () => {
 
   function onKey(e: { key: string, domEvent: KeyboardEvent }) {
     const ev = e.domEvent;
-    // const printable = !ev.altKey && !ev.ctrlKey && !ev.metaKey;
-
-    ws.send(JSON.stringify({
-      operation: "stdin",
-      data: e.key
-    }))
+    if (e.key.charCodeAt(0) === 13) {
+      xtermRef?.current?.terminal.writeln(e.key);
+    } else {
+      xtermRef?.current?.terminal.write(e.key);
+    }
   }
 
   let splited = mustSplit3(milvus)
@@ -189,13 +193,18 @@ const Log: React.FC = () => {
         <span style={{ marginRight: 16 }} />
       </div>
       <div style={{ marginBottom: 8 }}>
+        Download History Log: Since <span style={{ marginRight: 8 }} /> 
+          <DatePicker value={moment(sinceTime)} onChange={(dt) => dt && setSinceTime(dt.toISOString())} showTime placeholder="select date time"/> <span style={{ marginRight: 8 }} />
+          SizeLimit <span style={{ marginRight: 8 }} />
+          <InputNumber onChange={(val) => val && setLimitSizeMB(val)} defaultValue={limitSizeMB}/> MB <span style={{ marginRight: 8 }} />
+          <Button href={`${scheme}://${host}/api/v1/clusters/${cluster}/milvus/${splited[0]}/${splited[1]}/files/log?pod=${pod}&container=${container}&component=${component}?by=${splited[2]}&since=${sinceTime}&size_mb=${limitSizeMB}`} target="_blank" type="primary" shape="round" icon="download">Download</Button>
+      </div>
+      <div style={{ marginBottom: 8 }}>
           Follow log: <span style={{ marginRight: 8 }} />
           <ButtonGroup>
             <Button onClick={() => connect(xtermRef)} type="primary">Start </Button>
             <Button onClick={() => ws.close()} type="danger">Stop </Button>
           </ButtonGroup>
-          <span style={{ marginRight: 16 }} />
-          Download: <span style={{ marginRight: 8 }} /> <Button href={`${scheme}://${host}/api/v1/clusters/${cluster}/milvus/${splited[0]}/${splited[1]}/files/log?pod=${pod}&container=${container}&component=${component}?by=${splited[2]}`} target="_blank" type="primary" shape="round" icon="download"/>
         </div>
       <div id="terminal-container">
         <XTerm options={{

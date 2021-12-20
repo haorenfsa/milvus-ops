@@ -33,7 +33,7 @@ type K8sClient interface {
 	// ListPodsByLabel return logstream by options
 	Logs(ctx context.Context, ptyHandler terminal.PtyHandler, opt MilvusLocateOption) error
 
-	DownloadLog(ctx context.Context, opt MilvusLocateOption) (io.ReadCloser, error)
+	DownloadLog(ctx context.Context, opt MilvusLocateOption, logOpt LogOption) (io.ReadCloser, error)
 }
 
 type HelmClientForMilvus interface {

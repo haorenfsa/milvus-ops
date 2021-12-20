@@ -16,6 +16,7 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/meta"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
@@ -105,7 +106,7 @@ func (c *Client) ListMilvusCluster(ctx context.Context, namespace string) ([]*Mi
 	return convertMilvusList(mcList), nil
 }
 
-func (c *Client) DownloadLog(ctx context.Context, opt MilvusLocateOption) (io.ReadCloser, error) {
+func (c *Client) DownloadLog(ctx context.Context, opt MilvusLocateOption, logOpt LogOption) (io.ReadCloser, error) {
 	pods, err := c.ListPods(ctx, opt)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to list pods")
@@ -121,22 +122,25 @@ func (c *Client) DownloadLog(ctx context.Context, opt MilvusLocateOption) (io.Re
 	cfg.GroupVersion = &corev1.SchemeGroupVersion
 	cfg.NegotiatedSerializer = scheme.Codecs
 
-	// restCli, err := rest.RESTClientFor(&cfg)
-	// if err != nil {
-	// 	return errors.Wrap(err, "failed to create rest client")
-	// }
-
 	cliSet, err := kubernetes.NewForConfig(&cfg)
 	if err != nil {
 		return nil, fmt.Errorf("unable to create a client: %v", err)
 	}
 
+	var sinceTime *metav1.Time
+	if logOpt.Since != nil {
+		sinceTimeVal := metav1.NewTime(*logOpt.Since)
+		sinceTime = &sinceTimeVal
+	}
+
 	req := cliSet.CoreV1().
 		Pods(opt.Namespace).
 		GetLogs(pod, &corev1.PodLogOptions{
-			Container: opt.Container,
-			Follow:    false,
-			Previous:  false,
+			Container:  opt.Container,
+			SinceTime:  sinceTime,
+			LimitBytes: &logOpt.LimitBytes,
+			Follow:     false,
+			Previous:   false,
 		})
 
 	return req.Stream(ctx)
@@ -165,7 +169,7 @@ func (c *Client) Logs(ctx context.Context, ptyHandler terminal.PtyHandler, opt M
 	}
 
 	logWriter := NewConcurrentWriter(ptyHandler.Stdout())
-	tailLine := int64(300)
+	tailLine := int64(10)
 	var logOnePod = func(podName string) error {
 		req := cliSet.CoreV1().
 			Pods(opt.Namespace).

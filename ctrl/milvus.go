@@ -85,8 +85,10 @@ func getCache(key string, res interface{}) bool {
 
 func (c *MilvusController) handleDownloadLog(ctx *gin.Context) {
 	opt := model.GetMilvusLocateOption(ctx)
+	logOpt := model.GetLogOption(ctx)
+
 	var writer io.Writer = ctx.Writer
-	readerCloser, err := c.service.DownloadLog(ctx, opt)
+	readerCloser, err := c.service.DownloadLog(ctx, opt, logOpt)
 	if err != nil {
 		ctx.AbortWithError(500, err)
 		return

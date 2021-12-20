@@ -133,7 +133,6 @@ const Shell: React.FC = () => {
     }
     ws.onmessage = (e) => {
       if (xtermRef.current) {
-        console.log("onmessage", e.data)
         let data = JSON.parse(e.data)
         if (data.operation === "stdout") {
           xtermRef.current.terminal.write(data.data)
