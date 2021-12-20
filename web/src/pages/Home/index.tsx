@@ -2,10 +2,11 @@ import React, { Fragment } from "react";
 import { Input, Button, Row, Col, Select, Icon, Radio, Table } from "antd";
 
 import {
+  ListClusters,
   ListMilvusCluster,
   ListNamespaces,
   MilvusCluster,
-} from "../../api/tasks";
+} from "../../api/milvus";
 import { Pagination } from "../../models/page";
 
 import PlanPicker from "../../components/PlanPicker";
@@ -17,11 +18,28 @@ const selectAll = "_all"
 
 const Welcome: React.FC = () => {
   // const intl = useIntl();
+  const [clusters, setClusters] = React.useState(["qa"] as string[])
   const [cluster, setCluster] = React.useState("qa")
   const [mcList, setMcList] = React.useState([] as MilvusCluster[])
   const [nss, setNss] = React.useState([] as string[]) // namespaces
   const [loading, setLoading] = React.useState(true)
   const [search = "", setSearch] = React.useState("" as string)
+
+  React.useEffect(() => {
+    ListClusters((cls) => { cls.sort(); setClusters(cls)})
+  }, [])
+
+  React.useEffect(() => {
+    var defaultCluster = "qa"
+    var hasDefault = false
+    clusters.map((c) => {
+      if(c === "qa") {
+        hasDefault = true
+      }
+    })
+    defaultCluster = hasDefault ? defaultCluster : clusters[0]
+    setCluster(defaultCluster)
+  }, [clusters])
 
   React.useEffect(() => {
     ListNamespaces(cluster, setNss)
@@ -87,8 +105,7 @@ const Welcome: React.FC = () => {
 
         K8s Cluster: <span style={{ marginRight: 8 }} />
         <Radio.Group onChange={(e) => setCluster(e.target.value)} defaultValue={cluster}>
-          <Radio.Button value="qa">QA</Radio.Button>
-          <Radio.Button value="ci">CI</Radio.Button>
+          {clusters.map((c) => <Radio.Button key={"cluster-"+c} value={c}>{c}</Radio.Button>)}
         </Radio.Group>
       </div>
       <div style={{ marginTop: 16 }} />

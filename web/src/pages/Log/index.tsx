@@ -2,96 +2,9 @@ import { Button, message, Radio, Select, Tag } from "antd";
 import React, { useState, useEffect } from "react";
 import { XTerm } from 'xterm-for-react'
 import { FitAddon } from 'xterm-addon-fit';
-import { addListener } from "process";
 import ButtonGroup from "antd/lib/button/button-group";
 import { mustSplit3, parseQuery, queryGet, setQuery } from "../util";
-import { ClassifiedPods, ListClassfiedPods, ListMilvusCluster, MilvusCluster } from "../../api/tasks";
-
-// class Shell extends React.Component<any, any> {
-//   state = {
-
-//   }
-//   termRef: React.RefObject<HTMLElement>
-//   ws: WebSocket
-//   xterm: any
-
-//   constructor(props: any) {
-//     super(props);
-//     const fitAddon = new FitAddon();
-//     let xterm = (<XTerm terminalRef={termRef} />)
-//     this.xterm = xterm
-//     xterm.onKey = this.onKey
-//     let term = this.xterm.terminal
-//     let ele = document.getElementById('terminal-container')
-//     if (ele) {
-//       this.xterm.terminal.open(ele);
-//       term.loadAddon(fitAddon);
-//       fitAddon.fit()
-//     }
-//     this.termRef = this.xterm.terminalRef
-
-//     let cluster = "qa"
-//     let ns = "qa-milvus"
-//     let pod = "benchmark-tag-gttnz-1-milvus-indexcoord-84fdcc9f4d-54gd5"
-//     let container = "indexcoord"
-
-//     let host = window.location.host
-//     if (host.indexOf("localhost") !== -1) {
-//       host = "localhost:8080"
-//     }
-//     console.log("connecting to websocket ", host)
-//     this.ws = new WebSocket(`ws://${host}/api/v1/clusters/${cluster}/namespaces/${ns}/pod/${pod}/container/${container}/shell`)
-//     this.ws.onmessage = (e) => {
-//       console.log("onmessage", e.data)
-//       let data = JSON.parse(e.data)
-//       if (data.operation === "stdout") {
-//         term.write(data.data)
-//       }
-//     }
-//   }
-
-//   componentDidMount() {
-
-//   }
-
-//   componentWillUnmount() {
-//     this.ws.close()
-//   }
-
-//   onKey(e: { key: string, domEvent: KeyboardEvent }) {
-//     const ev = e.domEvent;
-//     // const printable = !ev.altKey && !ev.ctrlKey && !ev.metaKey;
-
-//     this.ws.send(JSON.stringify({
-//       operation: "stdin",
-//       data: e.key
-//     }))
-//   }
-
-//   render(): React.ReactNode {
-//     return (
-//       <div>
-//         <h1>Web Shell</h1>
-//         <div style={{ marginBottom: 8 }}>
-//           K8s Cluster: <span style={{ marginRight: 8 }} />
-//           <Radio.Group defaultValue={"qa"} buttonStyle="solid">
-//             <Radio.Button value="qa">QA</Radio.Button>
-//           </Radio.Group> <span style={{ marginRight: 16 }} />
-//           <span style={{ marginRight: 8 }}>Namespace:</span>
-//           <Select showSearch disabled style={{ width: 100 }} defaultValue={"all"} />
-//         </div>
-//         <div style={{ marginBottom: 8 }}>
-//           Milvus: <span style={{ marginRight: 8 }} />
-//           <Select showSearch disabled style={{ width: 100 }} defaultValue={"all"} />
-//           <span style={{ marginRight: 16 }} />
-//           Pod: <span style={{ marginRight: 8 }} />
-//           <Select showSearch disabled style={{ width: 100 }} defaultValue={"all"} />
-//         </div>
-//         {this.xterm}
-//       </div>
-//     );
-//   }
-// }
+import { ClassifiedPods, ListClassfiedPods, ListMilvusCluster, MilvusCluster } from "../../api/milvus";
 
 const xtermRef = React.createRef<XTerm>()
 let ws: WebSocket
@@ -274,14 +187,6 @@ const Log: React.FC = () => {
           {podSelection}
         </Select>
         <span style={{ marginRight: 16 }} />
-        {/* <span style={{ marginRight: 8 }}>Namespace:</span>
-        <Select showSearch disabled style={{ width: 100 }} defaultValue={"all"} />
-        <span style={{ marginRight: 16 }} /> */}
-        K8s Cluster: <span style={{ marginRight: 8 }} />
-        <Radio.Group disabled onChange={(e) => setCluster(e.target.value)} defaultValue={cluster}>
-          <Radio.Button value="qa">QA</Radio.Button>
-          <Radio.Button value="ci">CI</Radio.Button>
-        </Radio.Group>
       </div>
       <div style={{ marginBottom: 8 }}>
           Follow log: <span style={{ marginRight: 8 }} />

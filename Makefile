@@ -14,6 +14,9 @@ backend:
 frontend:
 	cd web && yarn install && yarn build
 
+frontend-dev: backend
+	cd web && yarn install && yarn start
+
 build: backend frontend
 
 run:

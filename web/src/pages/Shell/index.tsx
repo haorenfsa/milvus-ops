@@ -2,9 +2,8 @@ import { Button, message, Radio, Select, Tag } from "antd";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { XTerm } from 'xterm-for-react'
 import { FitAddon } from 'xterm-addon-fit';
-import { addListener } from "process";
 import { mustSplit3, parseQuery, queryGet, setQuery } from "../util";
-import { ClassifiedPods, ListClassfiedPods, ListMilvusCluster, MilvusCluster } from "../../api/tasks";
+import { ClassifiedPods, ListClassfiedPods, ListMilvusCluster, MilvusCluster } from "../../api/milvus";
 import { Terminal } from 'xterm'
 
 const xtermRef = React.createRef<XTerm>()
@@ -163,7 +162,7 @@ const Shell: React.FC = () => {
 
   return (
     <div>
-      <h1>Web Shell</h1>
+      <h1>Web Shell </h1>
       <div style={{ marginBottom: 8 }}>
         Milvus: <span style={{ marginRight: 8 }} />
         <Select onChange={setMilvus} showSearch style={{ width: 400 }} value={milvus}>
@@ -185,11 +184,6 @@ const Shell: React.FC = () => {
         {/* <span style={{ marginRight: 8 }}>Namespace:</span>
         <Select showSearch disabled style={{ width: 100 }} defaultValue={"all"} />
         <span style={{ marginRight: 16 }} /> */}
-        K8s Cluster: <span style={{ marginRight: 8 }} />
-        <Radio.Group disabled onChange={(e) => setCluster(e.target.value)} defaultValue={cluster}>
-          <Radio.Button value="qa">QA</Radio.Button>
-          <Radio.Button value="ci">CI</Radio.Button>
-        </Radio.Group>
       </div>
       <div id="terminal-container">
         <XTerm options={{
