@@ -36,7 +36,7 @@ const Welcome: React.FC = () => {
 
   const columns = [
     {
-      title: 'Name',
+      title: 'Milvus Name',
       dataIndex: 'name',
       width: 300,
     },
