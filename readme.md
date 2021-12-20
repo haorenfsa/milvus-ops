@@ -3,6 +3,7 @@
 prerequisite:
 - go:1.13
 - yarn
+- GNU make
 
 or install prerequisites on mac with homebrew:
 
@@ -14,17 +15,17 @@ brew install yarn
 
 
 
-build frontend:
+build:
 
 ```
-cd web && yarn install && yarn build
+make build
 ```
 
 
-run backend:
+run:
 
 ```
-go run ./cmd/milvus-ops
+make run
 ```
 
 you can now find the page on http://localhost:8080/app/

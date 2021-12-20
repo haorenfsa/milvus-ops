@@ -14,6 +14,8 @@ import (
 
 type K8sClientGetter interface {
 	GetClientByCluster(ctx context.Context, cluster string) (K8sClient, error)
+	ListClients(ctx context.Context) ([]K8sClient, error)
+	ListClusters(ctx context.Context) ([]string, error)
 }
 
 type K8sClient interface {

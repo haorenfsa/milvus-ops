@@ -43,6 +43,10 @@ func wrapErr(errType error, err error, format string, args ...interface{}) error
 	return err
 }
 
+func (m *MilvusService) ListClusters(ctx context.Context) ([]string, error) {
+	return m.clusters.ListClusters(ctx)
+}
+
 func (m *MilvusService) ListNamespaces(ctx context.Context, cluster string) ([]string, error) {
 	k8sCli, err := m.clusters.GetClientByCluster(ctx, cluster)
 	if err != nil {

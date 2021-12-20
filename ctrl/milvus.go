@@ -29,6 +29,7 @@ func NewMilvusController(s *service.MilvusService) *MilvusController {
 
 // Register registers request handler
 func (c *MilvusController) Register(root gin.IRouter) {
+	root.GET("clusters", server.WrapHandler(c.handleListClusters))
 	g := root.Group("/clusters/:cluster")
 	g.GET("/namespaces", server.WrapHandler(c.handleGetNamespaces))
 	g.GET("/milvus", server.WrapHandler(c.handleGet))
@@ -36,6 +37,10 @@ func (c *MilvusController) Register(root gin.IRouter) {
 	g.GET("/milvus/:namespace/:milvus/shell", c.handleShell)
 	g.GET("/milvus/:namespace/:milvus/logs", c.handleGetLogs)
 	g.GET("/milvus/:namespace/:milvus/files/log", c.handleDownloadLog)
+}
+
+func (c *MilvusController) handleListClusters(ctx *gin.Context) (interface{}, error) {
+	return c.service.ListClusters(ctx)
 }
 
 func (c *MilvusController) handleGetNamespaces(ctx *gin.Context) (interface{}, error) {

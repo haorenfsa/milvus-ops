@@ -31,7 +31,7 @@ func main() {
 
 	kubeStorage := file.NewStorage(kubeconfigPath)
 	k8sCliGetter := k8s.NewK8sClientGetter(kubeStorage)
-	clis, err := k8sCliGetter.List(ctx)
+	clis, err := k8sCliGetter.ListClients(ctx)
 	if err != nil {
 		log.Fatalf("list k8s client failed: %v", err)
 	}

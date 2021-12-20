@@ -22,7 +22,7 @@ func NewK8sClientGetter(storage storage.Kubeconfig) *K8sClientGetter {
 	return &K8sClientGetter{storage: storage, cache: map[string]K8sClient{}}
 }
 
-func (k *K8sClientGetter) List(ctx context.Context) ([]K8sClient, error) {
+func (k *K8sClientGetter) ListClients(ctx context.Context) ([]K8sClient, error) {
 	clusters, err := k.storage.ListClusters()
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to list clusters")
@@ -38,6 +38,14 @@ func (k *K8sClientGetter) List(ctx context.Context) ([]K8sClient, error) {
 	return clients, nil
 }
 
+func (k *K8sClientGetter) ListClusters(ctx context.Context) ([]string, error) {
+	var ret = []string{}
+	for name := range k.cache {
+		ret = append(ret, name)
+	}
+	return ret, nil
+}
+
 func (k *K8sClientGetter) GetClientByCluster(ctx context.Context, cluster string) (K8sClient, error) {
 	k.lock.Lock()
 	defer k.lock.Unlock()
@@ -50,7 +58,7 @@ func (k *K8sClientGetter) GetClientByCluster(ctx context.Context, cluster string
 	}
 	cli, err := NewClient(cluster, kubeconfig)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to create k8s client")
+		return nil, errors.Wrapf(err, "failed to create k8s client for cluster %s", cluster)
 	}
 	k.cache[cluster] = cli
 	return cli, nil

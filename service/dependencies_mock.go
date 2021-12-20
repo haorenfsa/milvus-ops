@@ -6,10 +6,14 @@ package service
 
 import (
 	context "context"
+	io "io"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
 	. "github.com/haorenfsa/milvus-ops/model"
+	terminal "github.com/maoqide/kubeutil/pkg/terminal"
+	v1 "k8s.io/api/core/v1"
+	genericclioptions "k8s.io/cli-runtime/pkg/genericclioptions"
 )
 
 // MockK8sClientGetter is a mock of K8sClientGetter interface.
@@ -50,6 +54,36 @@ func (mr *MockK8sClientGetterMockRecorder) GetClientByCluster(ctx, cluster inter
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetClientByCluster", reflect.TypeOf((*MockK8sClientGetter)(nil).GetClientByCluster), ctx, cluster)
 }
 
+// ListClients mocks base method.
+func (m *MockK8sClientGetter) ListClients(ctx context.Context) ([]K8sClient, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListClients", ctx)
+	ret0, _ := ret[0].([]K8sClient)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListClients indicates an expected call of ListClients.
+func (mr *MockK8sClientGetterMockRecorder) ListClients(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListClients", reflect.TypeOf((*MockK8sClientGetter)(nil).ListClients), ctx)
+}
+
+// ListClusters mocks base method.
+func (m *MockK8sClientGetter) ListClusters(ctx context.Context) ([]string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListClusters", ctx)
+	ret0, _ := ret[0].([]string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListClusters indicates an expected call of ListClusters.
+func (mr *MockK8sClientGetterMockRecorder) ListClusters(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListClusters", reflect.TypeOf((*MockK8sClientGetter)(nil).ListClusters), ctx)
+}
+
 // MockK8sClient is a mock of K8sClient interface.
 type MockK8sClient struct {
 	ctrl     *gomock.Controller
@@ -71,6 +105,35 @@ func NewMockK8sClient(ctrl *gomock.Controller) *MockK8sClient {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockK8sClient) EXPECT() *MockK8sClientMockRecorder {
 	return m.recorder
+}
+
+// ClusterName mocks base method.
+func (m *MockK8sClient) ClusterName() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ClusterName")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// ClusterName indicates an expected call of ClusterName.
+func (mr *MockK8sClientMockRecorder) ClusterName() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ClusterName", reflect.TypeOf((*MockK8sClient)(nil).ClusterName))
+}
+
+// DownloadLog mocks base method.
+func (m *MockK8sClient) DownloadLog(ctx context.Context, opt MilvusLocateOption) (io.ReadCloser, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DownloadLog", ctx, opt)
+	ret0, _ := ret[0].(io.ReadCloser)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DownloadLog indicates an expected call of DownloadLog.
+func (mr *MockK8sClientMockRecorder) DownloadLog(ctx, opt interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DownloadLog", reflect.TypeOf((*MockK8sClient)(nil).DownloadLog), ctx, opt)
 }
 
 // ListMilvusCluster mocks base method.
@@ -101,6 +164,78 @@ func (m *MockK8sClient) ListNamespaces(ctx context.Context) ([]string, error) {
 func (mr *MockK8sClientMockRecorder) ListNamespaces(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListNamespaces", reflect.TypeOf((*MockK8sClient)(nil).ListNamespaces), ctx)
+}
+
+// ListPods mocks base method.
+func (m *MockK8sClient) ListPods(ctx context.Context, opt MilvusLocateOption) ([]string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListPods", ctx, opt)
+	ret0, _ := ret[0].([]string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListPods indicates an expected call of ListPods.
+func (mr *MockK8sClientMockRecorder) ListPods(ctx, opt interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPods", reflect.TypeOf((*MockK8sClient)(nil).ListPods), ctx, opt)
+}
+
+// ListPodsDetail mocks base method.
+func (m *MockK8sClient) ListPodsDetail(ctx context.Context, opt MilvusLocateOption) ([]v1.Pod, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListPodsDetail", ctx, opt)
+	ret0, _ := ret[0].([]v1.Pod)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListPodsDetail indicates an expected call of ListPodsDetail.
+func (mr *MockK8sClientMockRecorder) ListPodsDetail(ctx, opt interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPodsDetail", reflect.TypeOf((*MockK8sClient)(nil).ListPodsDetail), ctx, opt)
+}
+
+// Logs mocks base method.
+func (m *MockK8sClient) Logs(ctx context.Context, ptyHandler terminal.PtyHandler, opt MilvusLocateOption) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Logs", ctx, ptyHandler, opt)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Logs indicates an expected call of Logs.
+func (mr *MockK8sClientMockRecorder) Logs(ctx, ptyHandler, opt interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Logs", reflect.TypeOf((*MockK8sClient)(nil).Logs), ctx, ptyHandler, opt)
+}
+
+// RESTClientGetter mocks base method.
+func (m *MockK8sClient) RESTClientGetter() genericclioptions.RESTClientGetter {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RESTClientGetter")
+	ret0, _ := ret[0].(genericclioptions.RESTClientGetter)
+	return ret0
+}
+
+// RESTClientGetter indicates an expected call of RESTClientGetter.
+func (mr *MockK8sClientMockRecorder) RESTClientGetter() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RESTClientGetter", reflect.TypeOf((*MockK8sClient)(nil).RESTClientGetter))
+}
+
+// Shell mocks base method.
+func (m *MockK8sClient) Shell(ctx context.Context, hdl terminal.PtyHandler, loc MilvusLocateOption) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Shell", ctx, hdl, loc)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Shell indicates an expected call of Shell.
+func (mr *MockK8sClientMockRecorder) Shell(ctx, hdl, loc interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Shell", reflect.TypeOf((*MockK8sClient)(nil).Shell), ctx, hdl, loc)
 }
 
 // MockHelmClientForMilvus is a mock of HelmClientForMilvus interface.
