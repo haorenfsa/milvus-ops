@@ -23,7 +23,7 @@ run:
 	./bin/milvus-ops
 
 build-linux: frontend
-	GOOS=linux; GOARCH=amd64; go build -o bin/milvus-ops-linux ./cmd/milvus-ops.go
+	GOOS=linux GOARCH=amd64 go build -o bin/milvus-ops-linux ./cmd/milvus-ops.go
 
 docker: build-linux
 	mv ./bin/milvus-ops-linux ./docker/server
