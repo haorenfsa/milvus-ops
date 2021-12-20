@@ -30,9 +30,13 @@ func (s Storage) ListClusters() ([]string, error) {
 	var clusters []string
 	for _, file := range files {
 		if !file.IsDir() {
+			if strings.HasSuffix(file.Name(), ".") {
+				// ignore hidden files
+				continue
+			}
 			if file.Name() == "config" {
 				clusters = append(clusters, "default")
-			} else {
+			} else if strings.HasSuffix(file.Name(), ".yaml") {
 				cluster := strings.TrimSuffix(file.Name(), ".yaml")
 				clusters = append(clusters, cluster)
 			}
